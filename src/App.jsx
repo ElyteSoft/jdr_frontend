@@ -5,46 +5,38 @@ import axios from 'axios';
 // Components
 import SearchBar from './components/SearchBar.jsx';
 import InhumadosTable from './components/InhumadosTable.jsx';
+import LoadingView from './components/Loading.jsx';
 
 function App() {
 
   const [inhumadosResponse, setInhumadosResponse] = useState([]); // This is the response from the API
-  const [inhumados, setInhumados] = useState([]); // This is the list of inhumados to display
+  const [term, setTerm] = useState(''); // This is the search term
+  const [isLoading, setIsLoading] = useState(false); // This is the loading state
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/inhumados')
-        .then(res => {
-          setInhumados(res.data);
-          setInhumadosResponse(res.data);
-        })
-        .catch(err => console.log(err))
-      }, []);
-  
-    const handleChange = (e) => {
-      const term = e.target.value;
-      let filteredInhumados;
-      
-      if (term === '') {
-        // If searchTerm is empty, show all inhumados
-        filteredInhumados = inhumadosResponse;
-      } else {
-        // If searchTerm is not empty, filter inhumados
-        filteredInhumados = inhumadosResponse.filter(inhumado => {
-          return inhumado.nombre_inhumado.toLowerCase().includes(term.toLowerCase()) || 
-                 inhumado.nombre_propietario.toLowerCase().includes(term.toLowerCase());
-        });
-      }
-      
-      setInhumados(filteredInhumados);
-    }
-    
-    
+  const handleSearch = (e) => {
+    setIsLoading(true);
+    axios.get(`http://localhost:3000/inhumados/${term}`)
+      .then((response) => {
+        setInhumadosResponse(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+      })
+  }   
+
+  const handleChange = (e) => {
+    const searchTerm = e.target.value;
+    setTerm(searchTerm);
+  }
   
   return (
     <>
-      <SearchBar handleChange={handleChange} />
+      <SearchBar handleSearch={handleSearch} handleChange={handleChange} />
       <br />
-      <InhumadosTable inhumadosList={inhumados} />
+      {isLoading ? <LoadingView /> : <InhumadosTable inhumados={inhumadosResponse} />}
+
     </>
   )
 }
