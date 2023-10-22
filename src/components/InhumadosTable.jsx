@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const TABLE_HEADERS = ["Número de Cuenta", "Nombre del inhumado", "Nombre del Propietario", "Jardín", "Sector", "Fracción"];
+const TABLE_HEADERS = ["Nombre", "Jardín", "Sector", "Fracción"];
 
 const Table = (inhumadosList) => {
   const [displayingList, setDisplayingList] = useState([]);
@@ -23,9 +23,7 @@ const Table = (inhumadosList) => {
         <tbody className="text-gray-800 bg-gray-200 text-sm font-medium">
           {displayingList.length > 0? displayingList.map((row, index) => (
             <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
-              <td className="py-3 px-6 text-left whitespace-nowrap">{row.cuenta}</td>
               <td className="py-3 px-6 text-left">{row.nombre}</td>
-              <td className="py-3 px-6 text-left">{row.nombre_propietario}</td>
               <td className="py-3 px-6 text-left">{row.codigo_jardin} - {row.jardin}</td>
               <td className="py-3 px-6 text-left">{row.sector}</td>
               <td className="py-3 px-6 text-left">{row.fraccion}</td>

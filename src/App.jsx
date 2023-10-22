@@ -2,6 +2,10 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// ENV Variables
+
+const API_URL = import.meta.env.VITE_JDR_SERVER_URL;
+
 // Components
 import SearchBar from './components/SearchBar.jsx';
 import InhumadosTable from './components/InhumadosTable.jsx';
@@ -12,10 +16,13 @@ function App() {
   const [inhumadosResponse, setInhumadosResponse] = useState([]); // This is the response from the API
   const [term, setTerm] = useState(''); // This is the search term
   const [isLoading, setIsLoading] = useState(false); // This is the loading state
+  const [toggleState, setToggleState] = useState(false); // This is the toggle state
 
-  const handleSearch = (e) => {
+  const [category, setCategory] = useState('inhumados'); // This is the category to search for [nombre, propietario
+
+  const handleSearch = () => {
     setIsLoading(true);
-    axios.get(`http://localhost:3000/inhumados/${term}`)
+    axios.get(`http://${API_URL}/${category}/${term}`)
       .then((response) => {
         setInhumadosResponse(response.data);
         setIsLoading(false);
@@ -30,26 +37,22 @@ function App() {
     const searchTerm = e.target.value;
     setTerm(searchTerm);
   }
-  
+
+  const handleToggleChange = () => {
+    setToggleState(!toggleState);
+  }
+
+  useEffect(() => {
+      setCategory(toggleState ? 'clientes' : 'inhumados')
+  }, [toggleState]);
+
   return (
     <>
-      <SearchBar handleSearch={handleSearch} handleChange={handleChange} />
+      <SearchBar handleSearch={handleSearch} handleChange={handleChange} handleToggleChange={handleToggleChange} checked={toggleState} />
       <br />
       {isLoading ? <LoadingView /> : <InhumadosTable inhumados={inhumadosResponse} />}
-
     </>
   )
 }
 
 export default App
-
-// Sample response from http://localhost:3000/inhumados
-// {
-//   "id": "789",
-//   "numero_cuenta": "123",
-//   "nombre_inhumado": "Jane Doe",
-//   "jardin": "Garden 2",
-//   "sector": "Sector B",
-//   "fraccion": "Fraction 2",
-//   "nombre_propietario": "John Doe"
-// }
